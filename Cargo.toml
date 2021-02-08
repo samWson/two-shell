@@ -9,6 +9,7 @@ license = "UNLICENSE"
 license-file = "UNLICENSE"
 keywords = "shell, learning"
 categories = "command-line-utilities"
+repository = "https://github.com/samWson/two-shell"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
