@@ -1,0 +1,14 @@
+= Two Shell
+
+A command line shell made primarily for learning.
+
+Initial code is based of the tutuorial by Josh Mcguigan <<jm>>.
+
+== This Repository is in the Public Domain
+
+The contents of this repository are in the public domain. Read the UNLICENSE file for details.
+
+[bibliography]
+== References
+
+* [[[jm]]] https://www.joshmcguigan.com/blog/build-your-own-shell-rust/[Build Your Own Shell using Rust by Josh Mcguigan]
