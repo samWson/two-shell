@@ -23,10 +23,16 @@ fn main() {
                     eprintln!("{}", e);
                 }
             }
+            "exit" => return,
             command => {
-                let mut child = Command::new(command).args(args).spawn().unwrap();
+                let child = Command::new(command).args(args).spawn();
 
-                child.wait();
+                match child {
+                    Ok(mut child) => {
+                        child.wait();
+                    }
+                    Err(e) => eprintln!("{}", e),
+                };
             }
         }
     }
