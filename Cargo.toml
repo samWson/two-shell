@@ -6,7 +6,6 @@ edition = "2018"
 description = "A command line shell made primarily for learning."
 readme = "README.adoc"
 license = "UNLICENSE"
-license-file = "UNLICENSE"
 keywords = ["shell", "learning"]
 categories = ["command-line-utilities"]
 repository = "https://github.com/samWson/two-shell"
