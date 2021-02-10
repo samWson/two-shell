@@ -1,14 +1,19 @@
 program twosh;
 
-var name: string;
+uses sysutils;
+
+var
+	command: string;
+	exitStatus: integer;
+	input: string;
+	path: string;
 
 begin
-        // Prompt the user for a name
-	Writeln('What is your name? ');
+	Read(input);
 
-        // Read input from stdin
-	Read(name);	
-	
-	// Greet the user
-	Writeln('Hello ' + name + '!');
+	command := Trim(input);
+
+	path := ExeSearch(command, '');
+
+	exitStatus := ExecuteProcess(path, '', []);
 end.
