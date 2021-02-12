@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+
+install_directory=~/usr/local/bin
+
+if [[ -d $install_directory ]]; then
+	cp build/twosh $install_directory
+else
+	mkdir -p $install_directory
+	cp build/twosh $install_directory
+fi
+
+echo "twosh installed"
+

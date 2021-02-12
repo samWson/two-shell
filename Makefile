@@ -6,3 +6,9 @@ run: twosh
 
 clean:
 	rm build/twosh build/twosh.o
+
+install: twosh
+	./scripts/install
+
+uninstall:
+	./scripts/uninstall

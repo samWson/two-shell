@@ -4,6 +4,16 @@ A command line shell made primarily for learning.
 
 Initial code is based of the tutuorial by Josh Mcguigan <<jm>>.
 
+== Installation
+
+The makefile has recipes for building, installing, and uninstalling Two Shell. It will install to `~/usr/local/bin/`. The install recipe will overwrite an existing Two Shell installation.
+
+To install run `make install`. To uninstall run `make uninstall`.
+
+== Usage
+
+Two Shell is intended to work like any other POSIX standard shell such as GNU BASH. Any typical command line program can be run by entering the path of the binary or name as is normal.
+
 == This Repository is in the Public Domain
 
 The contents of this repository are in the public domain. Read the UNLICENSE file for details.

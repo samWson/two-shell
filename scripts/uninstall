@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+
+install_directory=~/usr/local/bin
+
+if [[ -f $install_directory/twosh ]]; then
+    rm $install_directory/twosh
+    echo "twosh uninstalled"
+else
+    echo "twosh is already uninstalled"
+fi
+
