@@ -4,6 +4,8 @@ A command line shell made primarily for learning.
 
 Initial code is based of the tutuorial by Josh Mcguigan <<jm>>.
 
+Two Shell should not be considered fit for a production environment.
+
 == Installation
 
 The makefile has recipes for building, installing, and uninstalling Two Shell. It will install to `~/usr/local/bin/`. The install recipe will overwrite an existing Two Shell installation.
