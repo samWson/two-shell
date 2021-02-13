@@ -3,6 +3,7 @@ program twosh;
 uses sysutils;
 
 {$WRITEABLECONST OFF}
+{$VARSTRINGCHECKS ON}
 
 const
 	Prompt = 'twosh > ';
