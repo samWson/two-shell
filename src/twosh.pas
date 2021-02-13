@@ -2,12 +2,16 @@ program twosh;
 
 uses sysutils;
 
+{$WRITEABLECONST OFF}
+
+const
+	Prompt = 'twosh > ';
+	DefaultString = '';
 var
-	command: string;
+	command: string = DefaultString;
 	exitStatus: integer;
-	input: string;
-	path: string;
-	prompt: string;
+	input: string = DefaultString;
+	path: string = DefaultString;
 	stdout: Text;
 
 begin
@@ -16,8 +20,7 @@ begin
 	Rewrite(stdout);
 
 	// Print prompt
-	prompt := 'twosh > ';
-	Write(stdout, prompt);
+	Write(stdout, Prompt);
 	Flush(stdout);
 
 	// Get user input from command line
