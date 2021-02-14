@@ -4,6 +4,11 @@ twosh: src/twosh.pas
 run: twosh
 	./build/twosh
 
+debug:
+	rm build/twosh build/twosh.o
+	fpc -gl src/twosh
+	gdb build/towsh
+
 clean:
 	rm build/twosh build/twosh.o
 
