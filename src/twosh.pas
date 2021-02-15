@@ -1,6 +1,6 @@
 program twosh;
 
-uses sysutils;
+uses sysutils, StrUtils;
 
 {$WRITEABLECONST OFF}
 {$VARSTRINGCHECKS ON}
@@ -9,10 +9,13 @@ const
 	Prompt = 'twosh > ';
 	DefaultString = '';
 var
+	args: Array of RawByteString;
 	command: string = DefaultString;
+	executable: string = DefaultString;
+	executablePath: string = DefaultString;
 	exitStatus: integer;
 	input: string = DefaultString;
-	path: string = DefaultString;
+	parts: Array of RawByteString;
 	stdout: Text;
 
 begin
@@ -29,12 +32,17 @@ begin
 		// Get user input from command line
 		Readln(input);
 		command := Trim(input);
+		parts := SplitCommandLine(command);
+
+		// Separate the command from the arguments
+		executable := parts[0];
+		args := Copy(parts, 1, High(parts));
 
 		// Find the path of the executable command
-		path := ExeSearch(command, '');
+		executablePath := ExeSearch(executable, '');
 
 		// Execute the command
-		exitStatus := ExecuteProcess(path, '', []);
+		exitStatus := ExecuteProcess(executablePath, args, []);
 
 		// Clear input buffer
 		input := DefaultString;
