@@ -1,54 +1,56 @@
-program twosh;
 
-uses sysutils, StrUtils;
+Program twosh;
+
+Uses sysutils, StrUtils;
 
 {$WRITEABLECONST OFF}
 {$VARSTRINGCHECKS ON}
 
-const
-	Prompt = 'twosh > ';
-	DefaultString = '';
-var
-	args: Array of RawByteString;
-	command: string = DefaultString;
-	executable: string = DefaultString;
-	executablePath: string = DefaultString;
-	exitStatus: integer;
-	input: string = DefaultString;
-	parts: Array of RawByteString;
-	stdout: Text;
+Const
+  Prompt = 'twosh > ';
+  DefaultString = '';
 
-begin
-	// Assign standard output and open it for writing
-	Assign(stdout, '');
-	Rewrite(stdout);
+Var
+  args: Array Of RawByteString;
+  command: string = DefaultString;
+  executable: string = DefaultString;
+  executablePath: string = DefaultString;
+  exitStatus: integer;
+  input: string = DefaultString;
+  parts: Array Of RawByteString;
+  stdout: Text;
 
-	repeat
-	begin
-		// Print prompt
-		Write(stdout, Prompt);
-		Flush(stdout);
+Begin
+  // Assign standard output and open it for writing
+  Assign(stdout, '');
+  Rewrite(stdout);
 
-		// Get user input from command line
-		Readln(input);
-		command := Trim(input);
-		parts := SplitCommandLine(command);
+  Repeat
+    Begin
+      // Print prompt
+      Write(stdout, Prompt);
+      Flush(stdout);
 
-		// Separate the command from the arguments
-		executable := parts[0];
-		args := Copy(parts, 1, High(parts));
+      // Get user input from command line
+      Readln(input);
+      command := Trim(input);
+      parts := SplitCommandLine(command);
 
-		// Find the path of the executable command
-		executablePath := ExeSearch(executable, '');
+      // Separate the command from the arguments
+      executable := parts[0];
+      args := Copy(parts, 1, High(parts));
 
-		// Execute the command
-		exitStatus := ExecuteProcess(executablePath, args, []);
+      // Find the path of the executable command
+      executablePath := ExeSearch(executable, '');
 
-		// Clear input buffer
-		input := DefaultString;
-	end
-	until false;
+      // Execute the command
+      exitStatus := ExecuteProcess(executablePath, args, []);
 
-	// Cleanup unmanaged resources
-	Close(stdout);
-end.
+      // Clear input buffer
+      input := DefaultString;
+    End
+  Until false;
+
+  // Cleanup unmanaged resources
+  Close(stdout);
+End.

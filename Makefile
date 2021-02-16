@@ -1,3 +1,6 @@
+format: twosh
+	ptop -c ptop.cfg src/twosh.pas src/twosh.pas
+
 twosh: src/twosh.pas
 	fpc src/twosh
 
