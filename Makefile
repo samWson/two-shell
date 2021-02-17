@@ -1,21 +1,20 @@
-format: twosh
-	ptop -c ptop.cfg src/twosh.pas src/twosh.pas
-
-twosh: src/twosh.pas
+build/twosh: src/twosh.pas
 	fpc src/twosh
 
-run: twosh
+format:
+	ptop -c ptop.cfg src/twosh.pas src/twosh.pas
+
+run: build/twosh
 	./build/twosh
 
-debug:
-	rm build/twosh build/twosh.o
+debug: clean
 	fpc -gl src/twosh
 	gdb build/towsh
 
 clean:
 	rm build/twosh build/twosh.o
 
-install: twosh
+install: build/twosh
 	./scripts/install
 
 uninstall:
