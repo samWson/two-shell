@@ -40,11 +40,21 @@ Begin
       executable := parts[0];
       args := Copy(parts, 1, High(parts));
 
-      // Find the path of the executable command
-      executablePath := ExeSearch(executable, '');
+      Case executable Of
+        'cd':
+              Begin
+                If Length(args) = 0 Then
+                  ChDir(GetUserDir()) // Default to users HOME directory
+                Else
+                  ChDir(args[0]) // Change to directory given as an argument to the command
+              End;
+        Else
+          // Find the path of the executable command
+          executablePath := ExeSearch(executable, '');
 
-      // Execute the command
-      exitStatus := ExecuteProcess(executablePath, args, []);
+        // Execute the command
+        exitStatus := ExecuteProcess(executablePath, args, []);
+      End;
 
       // Clear input buffer
       input := DefaultString;
