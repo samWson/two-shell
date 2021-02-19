@@ -1,8 +1,8 @@
 = Two Shell
 
-A command line shell made primarily for learning.
+A standard command language interpreter shell.
 
-Initial code is based of the tutuorial by Josh Mcguigan <<jm>>.
+The purpose of Two Shell is learning by building. It does not implement any novel features or compelling use case beyond existing shells. Initial code is based of the tutuorial by Josh Mcguigan <<jm>>.
 
 Two Shell should not be considered fit for a production environment.
 
@@ -16,6 +16,10 @@ To install run `make install`. To uninstall run `make uninstall`.
 
 Two Shell is intended to work like any other POSIX standard shell such as GNU BASH. Any typical command line program can be run by entering the path of the binary or name as is normal.
 
+== Specification
+
+Two Shell is intended to implement the POSIX standard for the `sh` utility <<sh>> and the Shell Command Language <<scl>>. GNU Bash <<gb>> is used as an inspiration and reference for development.
+
 == This Repository is in the Public Domain
 
 The contents of this repository are in the public domain. Read the UNLICENSE file for details.
@@ -24,3 +28,6 @@ The contents of this repository are in the public domain. Read the UNLICENSE fil
 == References
 
 * [[[jm]]] https://www.joshmcguigan.com/blog/build-your-own-shell-rust/[Build Your Own Shell using Rust by Josh Mcguigan]
+* [[[sh]]] https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html[sh - shell, the standard command language interpreter]
+* [[[scl]]] https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18[Shell Command Language]
+* [[[gb]]] https://www.gnu.org/software/bash/[GNU Bash]
