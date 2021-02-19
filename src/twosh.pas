@@ -1,6 +1,8 @@
 
 Program twosh;
 
+{$MODE OBJFPC}
+
 Uses sysutils, StrUtils;
 
 {$WRITEABLECONST OFF}
@@ -34,6 +36,10 @@ Begin
       // Get user input from command line
       Readln(input);
       command := Trim(input);
+
+      If Length(command) = 0 Then
+        continue;
+
       parts := SplitCommandLine(command);
 
       // Separate the command from the arguments
@@ -50,18 +56,23 @@ Begin
               End;
         'exit': exit();
         Else
-          // Find the path of the executable command
-          executablePath := ExeSearch(executable, '');
+          Try
 
-        // Execute the command
-        exitStatus := ExecuteProcess(executablePath, args, []);
+            // Find the path of the executable command
+            executablePath := ExeSearch(executable, '');
+
+            // Execute the command
+            exitStatus := ExecuteProcess(executablePath, args, []);
+          Except
+            on E: EOSError Do Writeln('Command `' + executable + '` failed');
       End;
+    End;
 
-      // Clear input buffer
-      input := DefaultString;
-    End
-  Until false;
+    // Clear input buffer
+    input := DefaultString;
+  End
+Until false;
 
-  // Cleanup unmanaged resources
-  Close(stdout);
+// Cleanup unmanaged resources
+Close(stdout);
 End.
