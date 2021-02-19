@@ -48,6 +48,7 @@ Begin
                 Else
                   ChDir(args[0]) // Change to directory given as an argument to the command
               End;
+        'exit': exit();
         Else
           // Find the path of the executable command
           executablePath := ExeSearch(executable, '');

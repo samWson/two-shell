@@ -14,7 +14,7 @@ To install run `make install`. To uninstall run `make uninstall`.
 
 == Usage
 
-Two Shell is intended to work like any other POSIX standard shell such as GNU BASH. Any typical command line program can be run by entering the path of the binary or name as is normal.
+Two Shell is intended to work like any other POSIX standard shell such as GNU Bash. Any typical command line program can be run by entering the path of the binary or name as is normal.
 
 == Specification
 
