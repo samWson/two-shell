@@ -10,6 +10,12 @@ debug: clean
 	fpc -gl src/twosh
 	gdb build/towsh
 
+manual: twosh.1
+	man --local-file twosh.1
+
+twosh.1: twosh.adoc
+	asciidoctor --backend manpage twosh.adoc
+
 install: build/twosh
 	./scripts/install
 

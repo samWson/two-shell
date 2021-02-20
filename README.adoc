@@ -10,11 +10,17 @@ Two Shell should not be considered fit for a production environment.
 
 The makefile has recipes for building, installing, and uninstalling Two Shell. It will install to `~/usr/local/bin/`. The install recipe will overwrite an existing Two Shell installation.
 
+Since Two Shell is not for production or being distributed the install script does not require super user or administrator permissions. Files are installed to the users home directory.
+
 To install run `make install`. To uninstall run `make uninstall`.
 
 == Usage
 
 Two Shell is intended to work like any other POSIX standard shell such as GNU Bash. Any typical command line program can be run by entering the path of the binary or name as is normal.
+
+=== Manual
+
+The `twosh.adoc` file is the manual for the `twosh` binary. It is human readable Asciidoc format. A `man` page, `twosh.1` has also been generated from the asciidoc. The `man` page can be viewed with the `make manual` target, or with `man --local-file twos.1`.
 
 == Specification
 

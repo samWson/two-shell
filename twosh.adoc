@@ -1,0 +1,37 @@
+= twosh(1)
+Samuel Wilson
+:doctype: manpage
+
+== Name
+
+twosh - Two Shell. A command language interpreter shell made for learning by building.
+
+== Synopsis
+
+*twosh*
+
+== Description
+
+`twosh` is a command language interpreter. It is intended to operate like any POSIX standard `sh` utility. It currently implements only the most basic features. It follows GNU Bash as inspiration a reference for development.
+
+== Builtins
+
+=== cd
+
+Change the current working directory.
+
+=== exit
+
+Stop the `twosh` process.
+
+== Authors
+
+Two Shell was written by Samuel Wilson.
+
+== This Software is in the Public Domain
+
+Two Shell and the contents of the Two Shell repository are in the public domain. Read the UNLICENSE file for details or read them at https://unlicense.org.
+
+== Resources
+
+Git source repository on GitHub: https://github.com/samWson/two-shell
