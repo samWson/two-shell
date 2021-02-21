@@ -3,7 +3,7 @@ Program twosh;
 
 {$MODE OBJFPC}
 
-Uses sysutils, StrUtils;
+Uses process, sysutils, StrUtils;
 
 {$WRITEABLECONST OFF}
 {$VARSTRINGCHECKS ON}
@@ -11,6 +11,8 @@ Uses sysutils, StrUtils;
 Const
   Prompt = 'twosh > ';
   DefaultString = '';
+  ProcessOptions = [poWaitOnExit];
+  // The shell will hang until the external process ends.
 
 Var
   args: Array Of RawByteString;
@@ -20,18 +22,17 @@ Var
   exitStatus: integer;
   input: string = DefaultString;
   parts: Array Of RawByteString;
-  stdout: Text;
+  processHandler: TProcess;
 
 Begin
-  // Assign standard output and open it for writing
-  Assign(stdout, '');
-  Rewrite(stdout);
+  // Make an instance of an external processHandler handler
+  processHandler := TProcess.create(Nil);
+  processHandler.options := ProcessOptions;
 
   Repeat
     Begin
       // Print prompt
-      Write(stdout, Prompt);
-      Flush(stdout);
+      Write(Prompt);
 
       // Get user input from command line
       Readln(input);
@@ -57,22 +58,23 @@ Begin
         'exit': exit();
         Else
           Try
-
-            // Find the path of the executable command
-            executablePath := ExeSearch(executable, '');
+            processHandler.executable := executable;
+            processHandler.parameters.addStrings(args);
 
             // Execute the command
-            exitStatus := ExecuteProcess(executablePath, args, []);
+            processHandler.execute
           Except
-            on E: EOSError Do Writeln('Command `' + executable + '` failed');
+            on E: EProcess Do Writeln('Command `' + executable + '` failed');
       End;
     End;
 
     // Clear input buffer
     input := DefaultString;
+
+    processHandler.parameters.clear();
   End
 Until false;
 
 // Cleanup unmanaged resources
-Close(stdout);
+processHandler.free();
 End.
