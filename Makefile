@@ -1,9 +1,11 @@
+VPATH = build:src
+
 .PHONY: clean format uninstall
 
-build/twosh: src/twosh.pas
+twosh: twosh.pas
 	fpc src/twosh
 
-run: build/twosh
+run: twosh
 	./build/twosh
 
 debug: clean
@@ -16,7 +18,7 @@ manual: twosh.1
 twosh.1: twosh.adoc
 	asciidoctor --backend manpage twosh.adoc
 
-install: build/twosh
+install: twosh
 	./scripts/install
 
 uninstall:
