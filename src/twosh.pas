@@ -30,6 +30,7 @@ Var
 	readCount: integer;
 	buffer: array[0..127] of char;
 	running: boolean;
+	bytesAvailable: integer;
 
 Begin
   // Make an instance of an external currentProcess handler
@@ -120,11 +121,16 @@ Begin
 						
 						// Read the output into the buffer
 						// REVIEW: watch out for the index here. Not sure if it is right. Just the buffer may be all that is needed.
-						readCount := currentProcess.Output.Read(buffer[0], readSize);
 						running := currentProcess.Running;
+						bytesAvailable := currentProcess.Output.NumBytesAvailable;
+						// readCount := currentProcess.Output.Read(buffer[0], readSize);
+                                                currentProcess.Output.ReadBuffer(buffer[0], readSize);
+						running := currentProcess.Running;
+						bytesAvailable := currentProcess.Output.NumBytesAvailable;
 
 						// Write the buffer to the next process
-						nextProcess.Input.Write(buffer[0], readCount);
+						// nextProcess.Input.Write(buffer[0], readCount);
+						nextProcess.Input.WriteBuffer(buffer[0], readCount);
 
 						// REVIEW: if the next process writes too much dat to it's ouput
 						// then that data should be read here to prevent a deadlock.
