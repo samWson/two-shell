@@ -9,7 +9,6 @@ Uses process, sysutils, StrUtils, Types;
 {$VARSTRINGCHECKS ON}
 
 Const
-  Prompt = 'twosh > ';
   DefaultString = '';
 
 Var
@@ -19,7 +18,6 @@ Var
   executable: string = DefaultString;
   exitStatus: integer;
   i: integer;
-  input: string = DefaultString;
   parts: Array Of RawByteString;
   currentProcess: TProcess;
   nextProcess: TProcess;
@@ -32,6 +30,23 @@ Var
 	running: boolean;
 	bytesAvailable: integer;
 
+function Readline(): TStringDynArray;
+const
+  PROMPT = 'twosh > ';
+	PIPE = '|';
+
+var
+  input: string = DefaultString;
+  commands: TStringDynArray;
+
+begin
+      Write(Prompt);
+      Readln(input);
+      commands := SplitString(Trim(input), PIPE);
+
+	Exit(commands);
+end;
+
 Begin
   // Make an instance of an external currentProcess handler
   currentProcess := TProcess.create(Nil);
@@ -39,15 +54,7 @@ Begin
 
   Repeat
     Begin
-      // Print prompt
-      Write(Prompt);
-
-      // Get user input from command line
-      Readln(input);
-      commands := SplitString(Trim(input), '|');
-
-      //      If Length(commands) = 0 Then
-      //        continue;
+	commands := Readline();
 
       // iterate over each command
       // We know if there is a next command if High(commands) - i = 0
@@ -150,9 +157,6 @@ Begin
                 on E: EProcess Do Writeln('Command `' + executable + '` failed');
           End;
         End;
-
-      // Clear input buffer
-      input := DefaultString;
 
       currentProcess.parameters.clear();
     End;
