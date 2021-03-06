@@ -73,11 +73,11 @@ Begin
             'exit': exit();
             Else
               Try
+                currentProcess.executable := executable;
                 // peek to see if there is another process
                 If High(commands) - i = 0 Then
                   Begin
                     // There is no next command piped after this one, output goes to shell stdout
-                    currentProcess.executable := executable;
 			// The shell will hang until the current process is finished
                     currentProcess.options := [poWaitOnExit];
                     currentProcess.parameters.addStrings(args);
@@ -89,7 +89,6 @@ Begin
 
             // There is another command piped after this one, output goes to the next commands stdin
 			begin
-                        currentProcess.executable := executable;
 			currentProcess.options := [poUsePipes];
                         currentProcess.parameters.addStrings(args);
 
