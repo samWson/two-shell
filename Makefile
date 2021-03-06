@@ -2,6 +2,8 @@ VPATH = build:src
 
 .PHONY: clean format uninstall
 
+.DELETE_ON_ERROR:
+
 twosh: twosh.pas
 	fpc src/twosh
 
