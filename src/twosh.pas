@@ -21,46 +21,48 @@ Var
   parts: Array Of RawByteString;
   currentProcess: TProcess;
   nextProcess: TProcess;
-	nextArgs: array of RawByteString;
-	nextParts: Array of RawByteString;
-	nextExecutable: string = DefaultString;
-	readSize: integer;
-	readCount: integer;
-	buffer: array[0..127] of char;
-	running: boolean;
-	bytesAvailable: integer;
+  nextArgs: array Of RawByteString;
+  nextParts: Array Of RawByteString;
+  nextExecutable: string = DefaultString;
+  readSize: integer;
+  readCount: integer;
+  buffer: array[0..127] Of char;
+  running: boolean;
+  bytesAvailable: integer;
 
-function Readline(): TStringDynArray;
-const
+Function Readline(): TStringDynArray;
+Const
   PROMPT = 'twosh > ';
-	PIPE = '|';
+  PIPE = '|';
 
-var
+Var
   input: string = DefaultString;
   commands: TStringDynArray;
 
-begin
-      Write(Prompt);
-      Readln(input);
-      commands := SplitString(Trim(input), PIPE);
+Begin
+  Write(Prompt);
+  Readln(input);
+  commands := SplitString(Trim(input), PIPE);
 
-	Exit(commands);
-end;
+  Exit(commands);
+End;
+
+Procedure ReadEvalPrintLoop();
+Var
+  commandLine: TStringDynArray;
 
 Begin
-  // Make an instance of an external currentProcess handler
-  currentProcess := TProcess.create(Nil);
-  nextProcess := TProcess.create(Nil);
-
   Repeat
     Begin
-	commands := Readline();
+      commandLine := Readline();
 
+      currentProcess := TProcess.create(Nil);
+      nextProcess := TProcess.create(Nil);
       // iterate over each command
-      // We know if there is a next command if High(commands) - i = 0
-      For i := 0 To High(commands) Do
+      // We know if there is a next command if High(commandLine) - i = 0
+      For i := 0 To High(commandLine) Do
         Begin
-          parts := SplitCommandLine(Trim(commands[i]));
+          parts := SplitCommandLine(Trim(commandLine[i]));
 
           If Length(parts) = 0 Then
             continue;
@@ -82,10 +84,10 @@ Begin
               Try
                 currentProcess.executable := executable;
                 // peek to see if there is another process
-                If High(commands) - i = 0 Then
+                If High(commandLine) - i = 0 Then
                   Begin
                     // There is no next command piped after this one, output goes to shell stdout
-			// The shell will hang until the current process is finished
+                    // The shell will hang until the current process is finished
                     currentProcess.options := [poWaitOnExit];
                     currentProcess.parameters.addStrings(args);
 
@@ -94,67 +96,84 @@ Begin
                   End
                 Else
 
-            // There is another command piped after this one, output goes to the next commands stdin
-			begin
-			currentProcess.options := [poUsePipes];
-                        currentProcess.parameters.addStrings(args);
 
-			nextParts := SplitCommandLine(Trim(commands[i + 1]));
-			nextExecutable := nextParts[0];
 
-			nextProcess.executable := nextExecutable;
-			nextProcess.options := [poUsePipes];
 
-				if High(nextParts) > 1 then
-					begin
-                                            // there are arguments for the next command
-        					nextArgs := Copy(nextParts, 1, High(nextParts));
-        					nextProcess.parameters.addStrings(nextArgs)
-					end;
 
-			// Execute the processes
-			currentProcess.execute;
-			nextProcess.execute;
 
-			while currentProcess.running or (currentProcess.output.NumBytesAvailable > 0) do
-				begin
-					if currentProcess.Output.NumBytesAvailable > 0 then
-					begin
-						// make sure we don't read more data than is allocated in the buffer
-						readSize := currentProcess.Output.NumBytesAvailable;
-						if readSize > SizeOf(buffer) then
-							readSize := SizeOf(buffer);
-						
-						// Read the output into the buffer
-						// REVIEW: watch out for the index here. Not sure if it is right. Just the buffer may be all that is needed.
-						running := currentProcess.Running;
-						bytesAvailable := currentProcess.Output.NumBytesAvailable;
-						// readCount := currentProcess.Output.Read(buffer[0], readSize);
-                                                currentProcess.Output.ReadBuffer(buffer[0], readSize);
-						running := currentProcess.Running;
-						bytesAvailable := currentProcess.Output.NumBytesAvailable;
 
-						// Write the buffer to the next process
-						// nextProcess.Input.Write(buffer[0], readCount);
-						nextProcess.Input.WriteBuffer(buffer[0], readCount);
 
-						// REVIEW: if the next process writes too much dat to it's ouput
-						// then that data should be read here to prevent a deadlock.
-					end
-                                end;
 
-			// Close input on the next process so it finishes processing its data
-			nextProcess.CloseInput;
-			
-			// Wait for the next process to complete.
-			// REVIEW: This may not be a robust solution. Depending on the command
-			// being executed the process may not exit when its input is closed
-			// causing the following line to loop forever.
-			while nextProcess.Running do Sleep(1);
+         // There is another command piped after this one, output goes to the next commandLine stdin
+                  Begin
+                    currentProcess.options := [poUsePipes];
+                    currentProcess.parameters.addStrings(args);
 
-			end
-              Except
-                on E: EProcess Do Writeln('Command `' + executable + '` failed');
+                    nextParts := SplitCommandLine(Trim(commandLine[i + 1]));
+                    nextExecutable := nextParts[0];
+
+                    nextProcess.executable := nextExecutable;
+                    nextProcess.options := [poUsePipes];
+
+                    If High(nextParts) > 1 Then
+                      Begin
+                        // there are arguments for the next command
+                        nextArgs := Copy(nextParts, 1, High(nextParts));
+                        nextProcess.parameters.addStrings(nextArgs)
+                      End;
+
+                    // Execute the processes
+                    currentProcess.execute;
+                    nextProcess.execute;
+
+                    While currentProcess.running Or (currentProcess.output.NumBytesAvailable > 0) Do
+                      Begin
+                        If currentProcess.Output.NumBytesAvailable > 0 Then
+                          Begin
+                            // make sure we don't read more data than is allocated in the buffer
+                            readSize := currentProcess.Output.NumBytesAvailable;
+                            If readSize > SizeOf(buffer) Then
+                              readSize := SizeOf(buffer);
+
+                            // Read the output into the buffer
+
+
+
+
+
+
+
+
+// REVIEW: watch out for the index here. Not sure if it is right. Just the buffer may be all that is needed.
+                            running := currentProcess.Running;
+                            bytesAvailable := currentProcess.Output.NumBytesAvailable;
+                            // readCount := currentProcess.Output.Read(buffer[0], readSize);
+                            currentProcess.Output.ReadBuffer(buffer[0], readSize);
+                            running := currentProcess.Running;
+                            bytesAvailable := currentProcess.Output.NumBytesAvailable;
+
+                            // Write the buffer to the next process
+                            // nextProcess.Input.Write(buffer[0], readCount);
+                            nextProcess.Input.WriteBuffer(buffer[0], readCount);
+
+                            // REVIEW: if the next process writes too much dat to it's ouput
+                            // then that data should be read here to prevent a deadlock.
+                          End
+                      End;
+
+                    // Close input on the next process so it finishes processing its data
+                    nextProcess.CloseInput;
+
+                    // Wait for the next process to complete.
+                    // REVIEW: This may not be a robust solution. Depending on the command
+                    // being executed the process may not exit when its input is closed
+                    // causing the following line to loop forever.
+                    While nextProcess.Running Do
+                      Sleep(1);
+
+                  End
+                Except
+                  on E: EProcess Do Writeln('Command `' + executable + '` failed');
           End;
         End;
 
@@ -162,8 +181,9 @@ Begin
     End;
   End
 Until false;
+End;
 
-// Cleanup unmanaged resources
-currentProcess.free();
-nextProcess.free();
+// Main entrypoint into `twosh` executable.
+Begin
+  ReadEvalPrintLoop();
 End.
