@@ -8,19 +8,22 @@ Uses process, sysutils, StrUtils, Types;
 {$WRITEABLECONST OFF}
 {$VARSTRINGCHECKS ON}
 
+Type
+  Command = Record
+    executable: string;
+    args: Array Of RawByteString;
+  End;
+
+  Commands = Array Of Command;
+
 Const
   DefaultString = '';
 
 Var
   args: Array Of RawByteString;
-  command: string = DefaultString;
-  commands: TStringDynArray;
   executable: string = DefaultString;
   exitStatus: integer;
   i: integer;
-  parts: Array Of RawByteString;
-  currentProcess: TProcess;
-  nextProcess: TProcess;
   nextArgs: array Of RawByteString;
   nextParts: Array Of RawByteString;
   nextExecutable: string = DefaultString;
@@ -47,62 +50,88 @@ Begin
   Exit(commands);
 End;
 
+Function ParseCommands(commandLine: TStringDynArray): Commands;
+Var
+  i: integer;
+  parts: array Of RawByteString;
+  allCommands: Commands;
+  currentCommand: Command;
+
+Begin
+  For i := 0 To High(commandLine) Do
+    Begin
+      parts := SplitCommandLine(Trim(commandLine[i]));
+
+      If Length(parts) = 0 Then
+        continue;
+
+      currentCommand.executable := parts[0];
+      currentCommand.args := Copy(parts, 1, High(parts));
+
+      allCommands[i] := currentCommand;
+    End;
+
+  Exit(allCommands);
+End;
+
+Procedure ExecuteBuiltinCd(currentCommand: Command);
+Begin
+  If Length(args) = 0 Then
+    ChDir(GetUserDir()) // Default to users HOME directory
+  Else
+    ChDir(currentCommand.args[0])
+End;
+
+Procedure ExecuteSingleCommand(currentCommand: Command);
+Var
+  currentProcess
+
+Begin
+  currentProcess := TProcess.create(Nil);
+  With currentProcess Do
+    Begin
+      executable := executable;
+      options := [poWaitOnExit];
+      parameters.addStrings(currentCommand.args);
+      execute();
+    End;
+End;
+
 Procedure ReadEvalPrintLoop();
 Var
   commandLine: TStringDynArray;
+  currentProcess: TProcess;
+  nextProcess: TProcess;
+  parts: Array Of RawByteString;
+  allCommands: Commands;
 
 Begin
   Repeat
     Begin
       commandLine := Readline();
 
+      allCommands := ParseCommands(commandLine);
+
       currentProcess := TProcess.create(Nil);
       nextProcess := TProcess.create(Nil);
+
       // iterate over each command
       // We know if there is a next command if High(commandLine) - i = 0
-      For i := 0 To High(commandLine) Do
+      For i := 0 To High(allCommands) Do
         Begin
-          parts := SplitCommandLine(Trim(commandLine[i]));
-
-          If Length(parts) = 0 Then
-            continue;
-
-          // Separate the command from the arguments
-          executable := parts[0];
-          args := Copy(parts, 1, High(parts));
-
-          Case executable Of
-            'cd':
-                  Begin
-                    If Length(args) = 0 Then
-                      ChDir(GetUserDir()) // Default to users HOME directory
-                    Else
-                      ChDir(args[0]) // Change to directory given as an argument to the command
-                  End;
+          Case allCommands[i].executable Of
+            'cd': ExecuteBuiltinCd(allCommands[i]);
             'exit': exit();
             Else
               Try
+
+      // TODO: This initialization might not be needed if it is done inside the proceedures instead.
                 currentProcess.executable := executable;
                 // peek to see if there is another process
-                If High(commandLine) - i = 0 Then
-                  Begin
-                    // There is no next command piped after this one, output goes to shell stdout
-                    // The shell will hang until the current process is finished
-                    currentProcess.options := [poWaitOnExit];
-                    currentProcess.parameters.addStrings(args);
-
-                    // Execute the command
-                    currentProcess.execute
-                  End
+                If High(allCommands) - i = 0 Then
+                  // There is no next command piped after this one, output goes to shell stdout
+                  ExecuteSingleCommand(allCommands[i]);
                 Else
-
-
-
-
-
-
-
-
 
          // There is another command piped after this one, output goes to the next commandLine stdin
                   Begin
@@ -136,6 +165,14 @@ Begin
                               readSize := SizeOf(buffer);
 
                             // Read the output into the buffer
+
+
+
+
+
+
+
+
 
 
 
