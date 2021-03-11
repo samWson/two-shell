@@ -18,6 +18,7 @@ Type
 
 Const
   DEFAULTSTRING = '';
+  MAX_ALLOWED_COMMANDS = 100;
 
 Var
   exitStatus: integer;
@@ -47,6 +48,8 @@ Var
   currentCommand: Command;
 
 Begin
+  SetLength(allCommands, MAX_ALLOWED_COMMANDS);
+
   For i := 0 To High(commandLine) Do
     Begin
       parts := SplitCommandLine(Trim(commandLine[i]));
@@ -65,7 +68,7 @@ End;
 
 Procedure ExecuteBuiltinCd(currentCommand: Command);
 Begin
-  If Length(args) = 0 Then
+  If Length(currentCommand.args) = 0 Then
     ChDir(GetUserDir()) // Default to users HOME directory
   Else
     ChDir(currentCommand.args[0])
@@ -86,42 +89,27 @@ Begin
     End;
 End;
 
-Procedure ExecutePipedCommands(currentCommand, nextCommand: Command);
+Function InitializeProcess(Var aCommand: Command): TProcess;
 Var
-  currentProcess, nextProcess: TProcess;
+  process: TProcess;
 
 Begin
-  // REFACTOR: InitializeProcess(): TProcess
-  currentProcess := TProcess.create(Nil);
-  With currentProcess Do
+  process := TProcess.create(Nil);
+
+  With process Do
     Begin
-      executable := currentCommand.executable;
+      executable := aCommand.executable;
       options := [poUsePipes];
-      parameters.addStrings(currentCommand.args);
+      parameters.addStrings(aCommand.args);
     End;
 
-  // REFACTOR: InitializeProcess(): TProcess
-  nextProcess := TProcess.create(Nil);
-  With nextProcess Do
-    Begin
-      executable := nextCommand.executable;
-      options := [poUsePipes];
-      parameters.addStrings(nextCommand.args);
-    End;
-
-  // Execute the processes
-  currentProcess.execute;
-  nextProcess.execute;
-
-  PipeBytes(currentProcess, nextProcess);
-
-  WaitForExit(nextProcess);
+  Exit(process);
 End;
 
 Procedure PipeBytes(currentProcess, nextProcess: TProcess);
 Var
   readSize: integer;
-  readCount: integer;
+  readCount: integer = 0;
   buffer: array[0..127] Of char;
   bytesAvailable: integer;
   running: boolean;
@@ -161,8 +149,24 @@ Begin
   // REVIEW: This may not be a robust solution. Depending on the command
   // being executed the process may not exit when its input is closed
   // causing the following line to loop forever.
-  While nextProcess.Running Do
+  While process.Running Do
     Sleep(1);
+End;
+
+Procedure ExecutePipedCommands(currentCommand, nextCommand: Command);
+Var
+  currentProcess, nextProcess: TProcess;
+
+Begin
+  currentProcess := InitializeProcess(currentCommand);
+  nextProcess := InitializeProcess(nextCommand);
+
+  currentProcess.execute;
+  nextProcess.execute;
+
+  PipeBytes(currentProcess, nextProcess);
+
+  WaitForExit(nextProcess);
 End;
 
 Procedure ReadEvalPrintLoop();
@@ -187,8 +191,6 @@ Begin
             'exit': exit();
             Else
               Try
-
-
       // TODO: This initialization might not be needed if it is done inside the proceedures instead.
                 currentProcess.executable := executable;
                 // peek to see if there is another process
@@ -197,8 +199,6 @@ Begin
                   // There is no next command piped after this one, output goes to shell stdout
                   ExecuteSingleCommand(allCommands[i]);
                 Else
-
-
          // There is another command piped after this one, output goes to the next commandLine stdin
                   ExecutePipedCommands(allCommands[i], allCommands[i + 1]);
               Except
