@@ -174,6 +174,7 @@ Var
   commandLine: TStringDynArray;
   parts: Array Of RawByteString;
   allCommands: Commands;
+  i: integer;
 
 Begin
   Repeat
@@ -191,14 +192,13 @@ Begin
             'exit': exit();
             Else
               Try
-      // TODO: This initialization might not be needed if it is done inside the proceedures instead.
-                currentProcess.executable := executable;
                 // peek to see if there is another process
                 // REVIEW: Consider making a function that returns a boolean
                 If High(allCommands) - i = 0 Then
                   // There is no next command piped after this one, output goes to shell stdout
-                  ExecuteSingleCommand(allCommands[i]);
+                  ExecuteSingleCommand(allCommands[i])
                 Else
+
          // There is another command piped after this one, output goes to the next commandLine stdin
                   ExecutePipedCommands(allCommands[i], allCommands[i + 1]);
               Except
