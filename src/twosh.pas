@@ -37,7 +37,7 @@ Begin
   Readln(input);
   commands := SplitString(Trim(input), PIPE);
 
-  Exit(commands);
+  Readline := commands;
 End;
 
 Function ParseCommands(commandLine: TStringDynArray): Commands;
@@ -63,7 +63,7 @@ Begin
       allCommands[i] := currentCommand;
     End;
 
-  Exit(allCommands);
+  ParseCommands := allCommands;
 End;
 
 Procedure ExecuteBuiltinCd(currentCommand: Command);
