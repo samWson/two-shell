@@ -36,6 +36,9 @@ Begin
   Readln(input);
   commands := SplitString(Trim(input), PIPE);
 
+  If commands[0] = '' Then
+    SetLength(commands, 0);
+
   Readline := commands;
 End;
 
@@ -179,6 +182,9 @@ Begin
   Repeat
     Begin
       commandLine := Readline();
+
+      If Length(commandLine) = 0 Then
+        continue;
 
       allCommands := ParseCommands(commandLine);
 
