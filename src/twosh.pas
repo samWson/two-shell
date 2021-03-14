@@ -84,7 +84,7 @@ Begin
   currentProcess := TProcess.create(Nil);
   With currentProcess Do
     Begin
-      executable := executable;
+      executable := currentCommand.executable;
       options := [poWaitOnExit];
       parameters.addStrings(currentCommand.args);
       execute();
