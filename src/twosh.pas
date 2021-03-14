@@ -18,7 +18,6 @@ Type
 
 Const
   DEFAULTSTRING = '';
-  MAX_ALLOWED_COMMANDS = 100;
 
 Var
   exitStatus: integer;
@@ -48,7 +47,7 @@ Var
   currentCommand: Command;
 
 Begin
-  SetLength(allCommands, MAX_ALLOWED_COMMANDS);
+  SetLength(allCommands, Length(commandLine));
 
   For i := 0 To High(commandLine) Do
     Begin
