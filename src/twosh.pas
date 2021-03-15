@@ -105,7 +105,7 @@ Begin
       parameters.addStrings(aCommand.args);
     End;
 
-  Exit(process);
+  InitializeProcess := process;
 End;
 
 Procedure PipeBytes(currentProcess, nextProcess: TProcess);
@@ -116,6 +116,13 @@ Var
   bytesAvailable: integer;
   running: boolean;
 
+  // REVIEW: During debugging the currentProcess was not running, but the bytes
+  // were read into the buffer with each iteration of the loop. I can't yet confirm
+  // that the nextProcess successfully read the buffer into it's stdin.
+  //
+  // The loop and its conditions appear to function correctly. The loop stops after
+  // all the bytes have been read from currentProcess.Output, written to the buffer,
+  // and read into nextProcess.Input.
 Begin
   While currentProcess.running Or (currentProcess.output.NumBytesAvailable > 0) Do
     Begin
@@ -128,9 +135,13 @@ Begin
 
           // Read the output into the buffer
 
+          // DEBUG
           running := currentProcess.Running;
           bytesAvailable := currentProcess.Output.NumBytesAvailable;
+
           currentProcess.Output.ReadBuffer(buffer[0], readSize);
+
+          // DEBUG
           running := currentProcess.Running;
           bytesAvailable := currentProcess.Output.NumBytesAvailable;
 
@@ -189,23 +200,36 @@ Begin
       allCommands := ParseCommands(commandLine);
 
       // iterate over each command
-      // We know if there is a next command if High(commandLine) - i = 0
-      For i := 0 To High(allCommands) Do
+      // REVIEW: After executing piped commands this loop only moves forward one step
+      // and so it tries to execute the one of the previously piped commands as a single command.
+      i := 0;
+      While i < Length(allCommands) Do
         Begin
           Case allCommands[i].executable Of
-            'cd': ExecuteBuiltinCd(allCommands[i]);
+            'cd':
+                  Begin
+                    ExecuteBuiltinCd(allCommands[i]);
+                    i := i + 1
+                  End;
             'exit': exit();
             Else
               Try
                 // peek to see if there is another process
+                // We know if there is a next command if High(commandLine) - i = 0
                 // REVIEW: Consider making a function that returns a boolean
                 If High(allCommands) - i = 0 Then
                   // There is no next command piped after this one, output goes to shell stdout
-                  ExecuteSingleCommand(allCommands[i])
+                  Begin
+                    ExecuteSingleCommand(allCommands[i]);
+                    i := i + 1
+                  End
                 Else
+                  Begin
 
          // There is another command piped after this one, output goes to the next commandLine stdin
-                  ExecutePipedCommands(allCommands[i], allCommands[i + 1]);
+                    ExecutePipedCommands(allCommands[i], allCommands[i + 1]);
+                    i := i + 2 // Step over the next command
+                  End;
               Except
                 on E: EProcess Do Writeln('Command `' + allCommands[i].executable + '` failed');
           End;
