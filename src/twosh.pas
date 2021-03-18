@@ -25,7 +25,7 @@ Var
 Function Readline(): TStringDynArray;
 Const
   PROMPT = 'twosh > ';
-  PIPE = '|';
+  PIPE_OPERATOR = '|';
 
 Var
   input: string = DEFAULTSTRING;
@@ -34,7 +34,7 @@ Var
 Begin
   Write(Prompt);
   Readln(input);
-  commands := SplitString(Trim(input), PIPE);
+  commands := SplitString(Trim(input), PIPE_OPERATOR);
 
   If commands[0] = '' Then
     SetLength(commands, 0);
