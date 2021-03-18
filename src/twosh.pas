@@ -3,7 +3,7 @@ Program twosh;
 
 {$MODE OBJFPC}
 
-Uses process, sysutils, StrUtils, Types;
+Uses Classes, process, sysutils, StrUtils, Types;
 
 {$WRITEABLECONST OFF}
 {$VARSTRINGCHECKS ON}
@@ -109,51 +109,20 @@ Begin
 End;
 
 Procedure PipeBytes(currentProcess, nextProcess: TProcess);
+Const
+  BUFFER_SIZE = 2048;
+
 Var
-  readSize: integer;
-  readCount: integer = 0;
-  buffer: array[0..127] Of char;
-  bytesAvailable: integer;
-  running: boolean;
+  bytesRead: longint;
+  buffer: array[0..BUFFER_SIZE] Of byte;
 
-  // REVIEW: During debugging the currentProcess was not running, but the bytes
-  // were read into the buffer with each iteration of the loop. I can't yet confirm
-  // that the nextProcess successfully read the buffer into it's stdin.
-  //
-  // The loop and its conditions appear to function correctly. The loop stops after
-  // all the bytes have been read from currentProcess.Output, written to the buffer,
-  // and read into nextProcess.Input.
 Begin
-  While currentProcess.running Or (currentProcess.output.NumBytesAvailable > 0) Do
-    Begin
-      If currentProcess.Output.NumBytesAvailable > 0 Then
-        Begin
-          // make sure we don't read more data than is allocated in the buffer
-          readSize := currentProcess.Output.NumBytesAvailable;
-          If readSize > SizeOf(buffer) Then
-            readSize := SizeOf(buffer);
+  Repeat
+    bytesRead := currentProcess.Output.Read(buffer, BUFFER_SIZE);
+    nextProcess.Input.Write(buffer, bytesRead);
 
-          // Read the output into the buffer
+  Until bytesRead = 0;
 
-          // DEBUG
-          running := currentProcess.Running;
-          bytesAvailable := currentProcess.Output.NumBytesAvailable;
-
-          currentProcess.Output.ReadBuffer(buffer[0], readSize);
-
-          // DEBUG
-          running := currentProcess.Running;
-          bytesAvailable := currentProcess.Output.NumBytesAvailable;
-
-          // Write the buffer to the next process
-          nextProcess.Input.WriteBuffer(buffer[0], readCount);
-
-          // REVIEW: if the next process writes too much data to it's ouput
-          // then that data should be read here to prevent a deadlock.
-        End
-    End;
-
-  // Close input on the next process so it finishes processing its data
   nextProcess.CloseInput;
 End;
 
@@ -164,6 +133,32 @@ Begin
   // causing the following line to loop forever.
   While process.Running Do
     Sleep(1);
+End;
+
+Procedure WriteStdOut(process: TProcess);
+Const
+  BUFFER_SIZE = 2048;
+
+Var
+  outputStream: TStream;
+  bytesRead: longint;
+  buffer: array[1..BUFFER_SIZE] Of byte;
+
+Begin
+  outputStream := TMemoryStream.Create;
+
+  Repeat
+    bytesRead := process.Output.Read(buffer, BUFFER_SIZE);
+    outputStream.Write(buffer, bytesRead);
+  Until bytesRead = 0;
+
+  With TStringList.Create Do
+    Begin
+      outputStream.Position := 0;
+      LoadFromStream(outputStream);
+      Writeln(Text);
+      Free
+    End;
 End;
 
 Procedure ExecutePipedCommands(currentCommand, nextCommand: Command);
@@ -178,6 +173,8 @@ Begin
   nextProcess.execute;
 
   PipeBytes(currentProcess, nextProcess);
+
+  WriteStdOut(nextProcess);
 
   WaitForExit(nextProcess);
 End;
