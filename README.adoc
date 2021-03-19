@@ -22,6 +22,18 @@ Two Shell is intended to work like any other POSIX standard shell such as GNU Ba
 
 The `twosh.adoc` file is the manual for the `twosh` binary. It is human readable Asciidoc format. A `man` page, `twosh.1` has also been generated from the asciidoc. The `man` page can be viewed with the `make manual` target, or with `man --local-file twosh.1`.
 
+== Development
+
+Two Shell has been developed on Manjaro Ornara 21.0 <<mj>>.
+
+Two Shell is built with the Free Pascal Compiler fpc 3.2.0 <<fp>>.
+
+GNU Make 4.3 is used for build automation <<gm>>.
+
+Asciidoctor 2.0.12 is used for creating the man pages <<ad>>.
+
+GNU GDB 10.1 is used for debugging <<gdb>>.
+
 == Specification
 
 Two Shell is intended to implement the POSIX standard for the `sh` utility <<sh>> and the Shell Command Language <<scl>>. GNU Bash <<gb>> is used as an inspiration and reference for development.
@@ -37,3 +49,8 @@ The contents of this repository are in the public domain. Read the UNLICENSE fil
 * [[[sh]]] https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html[sh - shell, the standard command language interpreter]
 * [[[scl]]] https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18[Shell Command Language]
 * [[[gb]]] https://www.gnu.org/software/bash/[GNU Bash]
+* [[[mj]]] https://manjaro.org[Manjaro]
+* [[[fp]]] https://www.freepascal.org[Free Pascal]
+* [[[gm]]] https://www.gnu.org/software/make/[GNU Make]
+* [[[ad]]] https://asciidoctor.org[Asciidoctor]
+* [[[gdb]]] https://www.gnu.org/software/gdb/[GNU GDB]
