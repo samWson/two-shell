@@ -20,7 +20,7 @@ Two Shell is intended to work like any other POSIX standard shell such as GNU Ba
 
 === Manual
 
-The `twosh.adoc` file is the manual for the `twosh` binary. It is human readable Asciidoc format. A `man` page, `twosh.1` has also been generated from the asciidoc. The `man` page can be viewed with the `make manual` target, or with `man --local-file twos.1`.
+The `twosh.adoc` file is the manual for the `twosh` binary. It is human readable Asciidoc format. A `man` page, `twosh.1` has also been generated from the asciidoc. The `man` page can be viewed with the `make manual` target, or with `man --local-file twosh.1`.
 
 == Specification
 
